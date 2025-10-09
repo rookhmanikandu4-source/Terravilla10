@@ -21,6 +21,10 @@ export interface Plot {
   seller_id: string;
   seller_name?: string;
   seller_phone?: string;
+  owner_name: string;
+  owner_aadhaar: string;
+  property_owner_name: string;
+  owner_verified: boolean;
   title: string;
   description?: string;
   location_address: string;
@@ -35,6 +39,7 @@ export interface Plot {
   verification_status: VerificationStatus;
   blockchain_hash?: string;
   images: string[];
+  documents: Document[];
   created_at: string;
   updated_at: string;
 }
