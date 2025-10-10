@@ -51,7 +51,7 @@ export default function LandingPage({ onViewChange }: LandingPageProps) {
                 Traditional: ₹1 Cr + ₹6L broker fee = ₹1.06 Cr
               </p>
               <p className="text-sm text-emerald-800 font-medium mt-2">
-                LandDirect: ₹1 Cr only = Save ₹6 Lakhs
+                Polity: ₹1 Cr only = Save ₹6 Lakhs
               </p>
             </div>
           </div>

@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { Search, MapPin, Ruler, IndianRupee, Filter, ChevronDown, Phone, Heart, Shield } from 'lucide-react';
 import { mockPlots } from '../../data/mockData';
 import { Plot } from '../../types';
+import { formatPriceDisplay } from '../../utils/priceFormatters';
 
 export default function SearchPage() {
   const [searchQuery, setSearchQuery] = useState('');
@@ -23,8 +24,10 @@ export default function SearchPage() {
 
     const matchesCity = selectedCity === '' || plot.city === selectedCity;
     const matchesState = selectedState === '' || plot.state === selectedState;
-    const matchesMinPrice = minPrice === '' || plot.price >= Number(minPrice);
-    const matchesMaxPrice = maxPrice === '' || plot.price <= Number(maxPrice);
+    const minPriceInRupees = minPrice === '' ? 0 : Number(minPrice) * 100000;
+    const maxPriceInRupees = maxPrice === '' ? Infinity : Number(maxPrice) * 100000;
+    const matchesMinPrice = plot.price >= minPriceInRupees;
+    const matchesMaxPrice = plot.price <= maxPriceInRupees;
 
     return matchesSearch && matchesCity && matchesState && matchesMinPrice && matchesMaxPrice;
   });
@@ -91,7 +94,7 @@ export default function SearchPage() {
                 </div>
 
                 <div>
-                  <label className="block text-sm font-medium text-slate-700 mb-2">Min Price (₹)</label>
+                  <label className="block text-sm font-medium text-slate-700 mb-2">Min Price (Lakhs)</label>
                   <input
                     type="number"
                     value={minPrice}
@@ -102,7 +105,7 @@ export default function SearchPage() {
                 </div>
 
                 <div>
-                  <label className="block text-sm font-medium text-slate-700 mb-2">Max Price (₹)</label>
+                  <label className="block text-sm font-medium text-slate-700 mb-2">Max Price (Lakhs)</label>
                   <input
                     type="number"
                     value={maxPrice}
@@ -170,7 +173,7 @@ export default function SearchPage() {
                   <div>
                     <div className="text-sm text-slate-600 mb-1">Total Price</div>
                     <div className="text-xl font-bold text-slate-900">
-                      ₹{(plot.price / 10000000).toFixed(2)}Cr
+                      {formatPriceDisplay(plot.price)}
                     </div>
                   </div>
                   <button className="bg-emerald-600 text-white px-4 py-2 rounded-lg font-medium hover:bg-emerald-700 transition-colors text-sm">
@@ -225,7 +228,7 @@ export default function SearchPage() {
                   <div>
                     <div className="text-sm text-emerald-700 mb-1">Total Price</div>
                     <div className="text-3xl font-bold text-emerald-900">
-                      ₹{selectedPlot.price.toLocaleString('en-IN')}
+                      {formatPriceDisplay(selectedPlot.price)}
                     </div>
                     <div className="text-sm text-emerald-700 mt-1">
                       ₹{selectedPlot.price_per_sqft.toLocaleString('en-IN')} per sq ft

@@ -20,8 +20,8 @@ export const mockPlots: Plot[] = [
     verification_status: 'verified',
     blockchain_hash: '0x1a2b3c4d5e6f7g8h9i0j',
     images: [
-      'https://images.pexels.com/photos/259588/pexels-photo-259588.jpeg',
-      'https://images.pexels.com/photos/1115804/pexels-photo-1115804.jpeg'
+      'https://images.pexels.com/photos/1131573/pexels-photo-1131573.jpeg?auto=compress&cs=tinysrgb&w=800',
+      'https://images.pexels.com/photos/1396132/pexels-photo-1396132.jpeg?auto=compress&cs=tinysrgb&w=800'
     ],
     created_at: '2025-09-15T10:00:00Z',
     updated_at: '2025-09-20T14:30:00Z',
@@ -45,8 +45,8 @@ export const mockPlots: Plot[] = [
     verification_status: 'verified',
     blockchain_hash: '0x2b3c4d5e6f7g8h9i0j1k',
     images: [
-      'https://images.pexels.com/photos/974314/pexels-photo-974314.jpeg',
-      'https://images.pexels.com/photos/2132180/pexels-photo-2132180.jpeg'
+      'https://images.pexels.com/photos/2131784/pexels-photo-2131784.jpeg?auto=compress&cs=tinysrgb&w=800',
+      'https://images.pexels.com/photos/1595108/pexels-photo-1595108.jpeg?auto=compress&cs=tinysrgb&w=800'
     ],
     created_at: '2025-09-10T08:00:00Z',
     updated_at: '2025-09-18T11:00:00Z',
@@ -70,8 +70,8 @@ export const mockPlots: Plot[] = [
     verification_status: 'verified',
     blockchain_hash: '0x3c4d5e6f7g8h9i0j1k2l',
     images: [
-      'https://images.pexels.com/photos/380768/pexels-photo-380768.jpeg',
-      'https://images.pexels.com/photos/323780/pexels-photo-323780.jpeg'
+      'https://images.pexels.com/photos/380768/pexels-photo-380768.jpeg?auto=compress&cs=tinysrgb&w=800',
+      'https://images.pexels.com/photos/2159065/pexels-photo-2159065.jpeg?auto=compress&cs=tinysrgb&w=800'
     ],
     created_at: '2025-09-12T09:30:00Z',
     updated_at: '2025-09-22T16:45:00Z',
@@ -95,8 +95,8 @@ export const mockPlots: Plot[] = [
     verification_status: 'verified',
     blockchain_hash: '0x4d5e6f7g8h9i0j1k2l3m',
     images: [
-      'https://images.pexels.com/photos/209296/pexels-photo-209296.jpeg',
-      'https://images.pexels.com/photos/186077/pexels-photo-186077.jpeg'
+      'https://images.pexels.com/photos/1546168/pexels-photo-1546168.jpeg?auto=compress&cs=tinysrgb&w=800',
+      'https://images.pexels.com/photos/1115804/pexels-photo-1115804.jpeg?auto=compress&cs=tinysrgb&w=800'
     ],
     created_at: '2025-09-08T07:15:00Z',
     updated_at: '2025-09-19T13:20:00Z',
@@ -120,8 +120,8 @@ export const mockPlots: Plot[] = [
     verification_status: 'verified',
     blockchain_hash: '0x5e6f7g8h9i0j1k2l3m4n',
     images: [
-      'https://images.pexels.com/photos/1029599/pexels-photo-1029599.jpeg',
-      'https://images.pexels.com/photos/1179156/pexels-photo-1179156.jpeg'
+      'https://images.pexels.com/photos/417074/pexels-photo-417074.jpeg?auto=compress&cs=tinysrgb&w=800',
+      'https://images.pexels.com/photos/1029599/pexels-photo-1029599.jpeg?auto=compress&cs=tinysrgb&w=800'
     ],
     created_at: '2025-09-05T06:00:00Z',
     updated_at: '2025-09-17T10:30:00Z',
@@ -145,8 +145,8 @@ export const mockPlots: Plot[] = [
     verification_status: 'verified',
     blockchain_hash: '0x6f7g8h9i0j1k2l3m4n5o',
     images: [
-      'https://images.pexels.com/photos/280221/pexels-photo-280221.jpeg',
-      'https://images.pexels.com/photos/1396122/pexels-photo-1396122.jpeg'
+      'https://images.pexels.com/photos/1370704/pexels-photo-1370704.jpeg?auto=compress&cs=tinysrgb&w=800',
+      'https://images.pexels.com/photos/1396122/pexels-photo-1396122.jpeg?auto=compress&cs=tinysrgb&w=800'
     ],
     created_at: '2025-09-14T11:45:00Z',
     updated_at: '2025-09-21T15:00:00Z',

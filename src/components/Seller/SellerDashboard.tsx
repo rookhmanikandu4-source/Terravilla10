@@ -3,6 +3,8 @@ import { Upload, Plus, FileText, CheckCircle, Clock, XCircle, Image, Shield, Ale
 import { useAuth } from '../../context/AuthContext';
 import { mockPlots } from '../../data/mockData';
 import { DocumentType } from '../../types';
+import { formatPriceDisplay, parseLakhsToRupees } from '../../utils/priceFormatters';
+import ListingFeePayment from '../Payment/ListingFeePayment';
 
 interface DocumentUpload {
   type: DocumentType;
@@ -14,6 +16,8 @@ export default function SellerDashboard() {
   const { user } = useAuth();
   const [showForm, setShowForm] = useState(false);
   const [currentStep, setCurrentStep] = useState(1);
+  const [showPayment, setShowPayment] = useState(false);
+  const [pendingPlotId, setPendingPlotId] = useState<string | null>(null);
   const [formData, setFormData] = useState({
     title: '',
     description: '',
@@ -102,9 +106,16 @@ export default function SellerDashboard() {
       return;
     }
 
-    alert(`Property listing created successfully!\n\nDetails:\n- ${plotImages.length} images uploaded\n- ${uploadedDocs.length} documents uploaded\n- Owner verified: ${formData.owner_name}\n- Aadhaar: ${formData.owner_aadhaar}\n\nYour listing will be verified through government database and AI checks.`);
-
+    setPendingPlotId('temp-' + Date.now());
     setShowForm(false);
+    setShowPayment(true);
+  };
+
+  const handlePaymentComplete = () => {
+    alert(`Property listing created successfully!\n\nDetails:\n- ${plotImages.length} images uploaded\n- ${documents.filter(doc => doc.file !== null).length} documents uploaded\n- Owner verified: ${formData.owner_name}\n- Aadhaar: ${formData.owner_aadhaar}\n- Listing fee paid: ₹500\n\nYour listing will be verified through government database and AI checks.`);
+
+    setShowPayment(false);
+    setPendingPlotId(null);
     setCurrentStep(1);
     setFormData({
       title: '',
@@ -429,19 +440,20 @@ export default function SellerDashboard() {
 
                     <div>
                       <label className="block text-sm font-medium text-slate-700 mb-2">
-                        Price (₹) <span className="text-red-500">*</span>
+                        Price (Lakhs) <span className="text-red-500">*</span>
                       </label>
                       <input
                         type="number"
+                        step="0.01"
                         value={formData.price}
                         onChange={(e) => setFormData({ ...formData, price: e.target.value })}
                         className="w-full px-4 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-transparent outline-none"
-                        placeholder="9600000"
+                        placeholder="96"
                         required
                       />
                       {formData.price && formData.area_sqft && (
                         <p className="text-sm text-slate-600 mt-2">
-                          Price per sq ft: ₹{Math.round(Number(formData.price) / Number(formData.area_sqft)).toLocaleString('en-IN')}
+                          Price per sq ft: ₹{Math.round(parseLakhsToRupees(Number(formData.price)) / Number(formData.area_sqft)).toLocaleString('en-IN')}
                         </p>
                       )}
                     </div>
@@ -637,7 +649,7 @@ export default function SellerDashboard() {
                       <div className="flex items-center space-x-6 text-sm text-slate-600 mt-3">
                         <span>{plot.area_sqft.toLocaleString('en-IN')} sq ft</span>
                         <span className="font-semibold text-slate-900">
-                          ₹{plot.price.toLocaleString('en-IN')}
+                          {formatPriceDisplay(plot.price)}
                         </span>
                         <span>₹{plot.price_per_sqft.toLocaleString('en-IN')}/sq ft</span>
                       </div>
@@ -649,6 +661,17 @@ export default function SellerDashboard() {
           )}
         </div>
       </div>
+
+      {showPayment && pendingPlotId && (
+        <ListingFeePayment
+          plotId={pendingPlotId}
+          onPaymentComplete={handlePaymentComplete}
+          onCancel={() => {
+            setShowPayment(false);
+            setPendingPlotId(null);
+          }}
+        />
+      )}
     </div>
   );
 }
