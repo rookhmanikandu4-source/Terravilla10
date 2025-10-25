@@ -22,7 +22,7 @@ function AppContent() {
       case 'search':
         return <SearchPage />;
       case 'seller':
-        return <SellerDashboard />;
+        return <SellerDashboard onViewChange={setCurrentView} />;
       case 'market':
         return <MarketData />;
       case 'profile':

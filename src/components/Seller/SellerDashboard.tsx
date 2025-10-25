@@ -1,10 +1,10 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Upload, Plus, FileText, CheckCircle, Clock, XCircle, Image, Shield, AlertTriangle } from 'lucide-react';
 import { useAuth } from '../../context/AuthContext';
-import { mockPlots } from '../../data/mockData';
 import { DocumentType } from '../../types';
 import { formatPriceDisplay, parseLakhsToRupees } from '../../utils/priceFormatters';
 import ListingFeePayment from '../Payment/ListingFeePayment';
+import { supabase } from '../../lib/supabase';
 
 interface DocumentUpload {
   type: DocumentType;
@@ -12,12 +12,35 @@ interface DocumentUpload {
   preview?: string;
 }
 
-export default function SellerDashboard() {
+interface Plot {
+  id: string;
+  title: string;
+  description?: string;
+  location_address: string;
+  city: string;
+  state: string;
+  area_sqft: number;
+  price: number;
+  price_per_sqft: number;
+  verification_status: string;
+  images: string[];
+  seller_id: string;
+  created_at: string;
+}
+
+interface SellerDashboardProps {
+  onViewChange: (view: string) => void;
+}
+
+export default function SellerDashboard({ onViewChange }: SellerDashboardProps) {
   const { user } = useAuth();
   const [showForm, setShowForm] = useState(false);
   const [currentStep, setCurrentStep] = useState(1);
   const [showPayment, setShowPayment] = useState(false);
   const [pendingPlotId, setPendingPlotId] = useState<string | null>(null);
+  const [pendingPlotData, setPendingPlotData] = useState<any>(null);
+  const [userPlots, setUserPlots] = useState<Plot[]>([]);
+  const [loading, setLoading] = useState(true);
   const [formData, setFormData] = useState({
     title: '',
     description: '',
@@ -39,7 +62,29 @@ export default function SellerDashboard() {
     { type: 'encumbrance_certificate', file: null },
   ]);
 
-  const userPlots = mockPlots.filter(plot => plot.seller_id === user?.id);
+  useEffect(() => {
+    if (user?.id) {
+      fetchUserPlots();
+    }
+  }, [user?.id]);
+
+  const fetchUserPlots = async () => {
+    try {
+      setLoading(true);
+      const { data, error } = await supabase
+        .from('plots')
+        .select('*')
+        .eq('seller_id', user?.id)
+        .order('created_at', { ascending: false });
+
+      if (error) throw error;
+      setUserPlots(data || []);
+    } catch (error) {
+      console.error('Error fetching plots:', error);
+    } finally {
+      setLoading(false);
+    }
+  };
 
   const handleImageUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
     const files = Array.from(e.target.files || []);
@@ -92,7 +137,7 @@ export default function SellerDashboard() {
     setCurrentStep(prev => prev + 1);
   };
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
     if (plotImages.length === 0) {
@@ -106,37 +151,84 @@ export default function SellerDashboard() {
       return;
     }
 
+    const plotData = {
+      images: imagePreviews,
+      documents: documents.filter(doc => doc.file !== null),
+      formData,
+    };
+    setPendingPlotData(plotData);
     setPendingPlotId('temp-' + Date.now());
     setShowForm(false);
     setShowPayment(true);
   };
 
-  const handlePaymentComplete = () => {
-    alert(`Property listing created successfully!\n\nDetails:\n- ${plotImages.length} images uploaded\n- ${documents.filter(doc => doc.file !== null).length} documents uploaded\n- Owner verified: ${formData.owner_name}\n- Aadhaar: ${formData.owner_aadhaar}\n- Listing fee paid: ₹500\n\nYour listing will be verified through government database and AI checks.`);
+  const handlePaymentComplete = async () => {
+    if (!user?.id || !pendingPlotData) return;
 
-    setShowPayment(false);
-    setPendingPlotId(null);
-    setCurrentStep(1);
-    setFormData({
-      title: '',
-      description: '',
-      location_address: '',
-      city: '',
-      state: '',
-      area_sqft: '',
-      price: '',
-      owner_name: '',
-      owner_aadhaar: '',
-      property_owner_name: '',
-    });
-    setPlotImages([]);
-    setImagePreviews([]);
-    setDocuments([
-      { type: 'title_deed', file: null },
-      { type: 'survey_map', file: null },
-      { type: 'tax_receipt', file: null },
-      { type: 'encumbrance_certificate', file: null },
-    ]);
+    try {
+      const priceInPaise = parseLakhsToRupees(Number(pendingPlotData.formData.price)) * 100;
+      const areaSqft = Number(pendingPlotData.formData.area_sqft);
+      const pricePerSqft = Math.round(priceInPaise / areaSqft);
+
+      const { data: newPlot, error } = await supabase
+        .from('plots')
+        .insert({
+          seller_id: user.id,
+          owner_name: pendingPlotData.formData.owner_name,
+          owner_aadhaar: pendingPlotData.formData.owner_aadhaar,
+          property_owner_name: pendingPlotData.formData.property_owner_name,
+          owner_verified: true,
+          title: pendingPlotData.formData.title,
+          description: pendingPlotData.formData.description,
+          location_address: pendingPlotData.formData.location_address,
+          city: pendingPlotData.formData.city,
+          state: pendingPlotData.formData.state,
+          area_sqft: areaSqft,
+          price: priceInPaise,
+          price_per_sqft: pricePerSqft,
+          status: 'pending_verification',
+          verification_status: 'pending',
+          images: pendingPlotData.images,
+        })
+        .select()
+        .single();
+
+      if (error) throw error;
+
+      await fetchUserPlots();
+
+      setShowPayment(false);
+      setPendingPlotId(null);
+      setPendingPlotData(null);
+      setCurrentStep(1);
+      setFormData({
+        title: '',
+        description: '',
+        location_address: '',
+        city: '',
+        state: '',
+        area_sqft: '',
+        price: '',
+        owner_name: '',
+        owner_aadhaar: '',
+        property_owner_name: '',
+      });
+      setPlotImages([]);
+      setImagePreviews([]);
+      setDocuments([
+        { type: 'title_deed', file: null },
+        { type: 'survey_map', file: null },
+        { type: 'tax_receipt', file: null },
+        { type: 'encumbrance_certificate', file: null },
+      ]);
+
+      alert(`Property listing created successfully!\n\nDetails:\n- ${pendingPlotData.images.length} images uploaded\n- ${pendingPlotData.documents.length} documents uploaded\n- Owner verified: ${pendingPlotData.formData.owner_name}\n- Aadhaar: ${pendingPlotData.formData.owner_aadhaar}\n- Listing fee paid: ₹500\n\nYour listing will be verified through government database and AI checks.`);
+
+      onViewChange('search');
+    } catch (error) {
+      console.error('Error creating plot:', error);
+      alert('Failed to create listing. Please try again.');
+    }
   };
 
   const getStatusIcon = (status: string) => {
@@ -609,7 +701,12 @@ export default function SellerDashboard() {
             <h2 className="font-semibold text-slate-900">My Listings ({userPlots.length})</h2>
           </div>
 
-          {userPlots.length === 0 ? (
+          {loading ? (
+            <div className="p-12 text-center">
+              <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-emerald-600 mx-auto mb-4"></div>
+              <p className="text-slate-600">Loading your listings...</p>
+            </div>
+          ) : userPlots.length === 0 ? (
             <div className="p-12 text-center">
               <div className="bg-slate-100 w-20 h-20 rounded-full flex items-center justify-center mx-auto mb-4">
                 <Plus className="w-10 h-10 text-slate-400" />
@@ -649,9 +746,9 @@ export default function SellerDashboard() {
                       <div className="flex items-center space-x-6 text-sm text-slate-600 mt-3">
                         <span>{plot.area_sqft.toLocaleString('en-IN')} sq ft</span>
                         <span className="font-semibold text-slate-900">
-                          {formatPriceDisplay(plot.price)}
+                          {formatPriceDisplay(plot.price / 100)}
                         </span>
-                        <span>₹{plot.price_per_sqft.toLocaleString('en-IN')}/sq ft</span>
+                        <span>₹{Math.round(plot.price_per_sqft / 100).toLocaleString('en-IN')}/sq ft</span>
                       </div>
                     </div>
                   </div>

@@ -1,5 +1,5 @@
 /*
-  # Initial Database Schema for Polity Real Estate Platform
+  # Initial Database Schema for TerraVilla Real Estate Platform
 
   1. New Tables
     - `users`

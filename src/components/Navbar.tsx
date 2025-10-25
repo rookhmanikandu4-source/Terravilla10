@@ -23,7 +23,7 @@ export default function Navbar({ currentView, onViewChange }: NavbarProps) {
               <div className="bg-gradient-to-br from-emerald-500 to-teal-600 text-white p-2 rounded-lg">
                 <BarChart3 className="w-5 h-5" />
               </div>
-              <span className="hidden sm:inline">Polity</span>
+              <span className="hidden sm:inline">TerraVilla</span>
             </button>
 
             <div className="hidden md:flex items-center space-x-1">

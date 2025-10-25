@@ -46,7 +46,7 @@ export default function ListingFeePayment({ plotId, onPaymentComplete, onCancel 
                   <div className="text-sm text-slate-600">
                     <p className="font-medium text-slate-900 mb-1">What you get:</p>
                     <ul className="space-y-1 list-disc list-inside">
-                      <li>Property listed on Polity marketplace</li>
+                      <li>Property listed on TerraVilla marketplace</li>
                       <li>Verified badge for your listing</li>
                       <li>Access to interested buyers</li>
                       <li>30-day premium visibility</li>
@@ -99,7 +99,7 @@ export default function ListingFeePayment({ plotId, onPaymentComplete, onCancel 
               <CheckCircle className="w-8 h-8 text-emerald-600" />
             </div>
             <h3 className="text-xl font-semibold text-emerald-900 mb-2">Payment Successful!</h3>
-            <p className="text-slate-600 mb-4">Your listing is now live on Polity</p>
+            <p className="text-slate-600 mb-4">Your listing is now live on TerraVilla</p>
             <div className="bg-emerald-50 border border-emerald-200 rounded-lg p-4">
               <p className="text-sm text-emerald-800">
                 Your property will be visible to potential buyers immediately.
